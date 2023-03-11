@@ -1,0 +1,11 @@
+---
+import SearchInput from "../components/SearchInput";
+
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Home">
+	<section class="flex flex-col justify-center items-center">
+		<SearchInput client:visible />
+	</section>
+</Layout>

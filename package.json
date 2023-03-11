@@ -1,0 +1,37 @@
+{
+  "name": "homer",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/react": "^2.1.0",
+    "@astrojs/tailwind": "^3.1.0",
+    "@fontsource/inter": "^4.5.15",
+    "@mantine/hooks": "^6.0.1",
+    "@phosphor-icons/react": "^2.0.5",
+    "@types/react": "^18.0.21",
+    "@types/react-dom": "^18.0.6",
+    "astro": "^2.1.0",
+    "daisyui": "^2.51.3",
+    "lodash-es": "^4.17.21",
+    "react": "^18.0.0",
+    "react-daisyui": "^3.0.3",
+    "react-dom": "^18.0.0",
+    "react-modal": "^3.16.1",
+    "tailwindcss": "^3.0.24"
+  },
+  "devDependencies": {
+    "@edqe/eslint-config": "^1.0.3",
+    "@types/lodash-es": "^4.17.6",
+    "@types/node": "^18.15.0",
+    "@types/react-modal": "^3.13.1",
+    "eslint-plugin-astro": "^0.24.0",
+    "tailwind-scrollbar": "^2.1.0"
+  }
+}

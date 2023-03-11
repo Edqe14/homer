@@ -1,0 +1,55 @@
+---
+import "@fontsource/inter";
+
+export interface Props {
+	title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en" data-theme="halloween">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="icon" href="/favicon.ico" />
+		<meta name="generator" content={Astro.generator} />
+
+		<!-- Write meta tags  -->
+		<meta name="title" content="Pomominder">
+		<meta name="description" content="Manage your productivty.">
+
+		<!-- Open Graph / Facebook -->
+		<meta property="og:type" content="website">
+		<meta property="og:url" content="https://pomominder.edqe.me/">
+		<meta property="og:title" content="Pomominder">
+		<meta property="og:description" content="Manage your productivty.">
+		<meta property="og:image" content="/pomo.jpg">
+
+		<!-- Twitter -->
+		<meta property="twitter:card" content="summary_large_image">
+		<meta property="twitter:url" content="https://pomominder.edqe.me/">
+		<meta property="twitter:title" content="Pomominder">
+		<meta property="twitter:description" content="Manage your productivty.">
+		<meta property="twitter:image" content="/pomo.jpg">
+
+		<title>{title}</title>
+
+    <style is:global>
+      input {
+        @apply bg-zinc-700;
+      }
+
+      code {
+        @apply bg-neutral rounded-md p-1;
+      }
+    </style>
+	</head>
+
+	<body class="bg-base-100 text-base-content font-inter">
+    <main class="w-3/5 mx-auto min-h-screen py-16">
+      <slot />
+    </main>
+	</body>
+</html>
