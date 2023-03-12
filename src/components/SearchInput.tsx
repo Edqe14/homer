@@ -152,6 +152,7 @@ const SearchInput = () => {
         </section>
       </section>
 
+      {/* Menu */}
       {query.text && (
         <section
           ref={menuRef}

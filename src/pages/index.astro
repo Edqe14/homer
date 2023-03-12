@@ -1,5 +1,6 @@
 ---
 import Clock from "../components/Clock";
+import Globe from "../components/Globe";
 import SearchInput from "../components/SearchInput";
 import Wave from "../components/Wave";
 
@@ -13,4 +14,6 @@ import Layout from "../layouts/Layout.astro";
 		<Clock client:visible className="mb-14" />
 		<SearchInput client:visible />
 	</section>
+
+	<Globe className="py-16" client:visible width={400} height={400} />
 </Layout>
