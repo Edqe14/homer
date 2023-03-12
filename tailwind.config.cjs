@@ -11,8 +11,12 @@ module.exports = {
     extend: {
       fontFamily: {
         inter: ['Inter', 'sans-serif'],
+        jetbrains: ['"JetBrains Mono"', 'monospace'],
       },
     },
   },
   plugins: [require('tailwind-scrollbar'), require('daisyui')],
+  daisyui: {
+    themes: ['halloween'],
+  },
 };

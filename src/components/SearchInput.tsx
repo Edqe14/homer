@@ -1,12 +1,16 @@
-import { useEffect, useRef, useState } from 'react';
+/* eslint-disable @typescript-eslint/indent */
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useHotkeys } from '@mantine/hooks';
 import ReactModal from 'react-modal';
 import { X } from '@phosphor-icons/react';
 import { Table } from 'react-daisyui';
+import autoAnimate from '@formkit/auto-animate';
 import parseSearch from '../lib/parseSearch';
 import Configuration, { Macro } from '../config';
+import goTo from '../lib/goTo';
 
 const SearchInput = () => {
+  const menuRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -14,6 +18,22 @@ const SearchInput = () => {
   const [search, setSearch] = useState('');
   const [macro, setMacro] = useState<Macro | null>(null);
   const query = parseSearch(search);
+  const searchMacros = useMemo(() => {
+    if (macro) {
+      return macro.autoComplete
+        ? macro.autoComplete({
+            query: query.text,
+            setSearch,
+          })
+        : [];
+    }
+    return Configuration.get('search.macros').filter(
+      (m) =>
+        query.text === '/' ||
+        m.key === query.text ||
+        m.name.toLowerCase().includes(query.text.toLowerCase())
+    );
+  }, [query.text]);
 
   useEffect(() => {
     if (macro) return;
@@ -40,14 +60,36 @@ const SearchInput = () => {
     ],
   ]);
 
+  useEffect(() => {
+    if (menuRef.current) autoAnimate(menuRef.current);
+  }, [menuRef.current]);
+
+  const menuUpdate = (v: Macro) => {
+    if (!macro) {
+      setMacro(v);
+      setSearch('');
+
+      return;
+    }
+
+    v.action({
+      query: query.text,
+      setSearch,
+      setMacro,
+    });
+  };
+
   return (
     <>
       <section className="w-full max-w-lg flex relative bg-base-300 rounded-xl overflow-hidden">
         {macro && (
           <section className="pl-3 -mr-1 flex items-center justify-center">
             <span
-              className="cursor-help text-white rounded-md p-1 pointer-events-auto inline"
-              style={{ backgroundColor: macro?.style?.background }}
+              className="cursor-help bg-neutral text-white rounded-md p-1 pointer-events-auto inline"
+              style={{
+                backgroundColor: macro?.style?.background,
+                color: macro?.style?.text,
+              }}
               onClick={() => setOpenMacroMenu(true)}
             >
               {macro.icon ?? macro.key}
@@ -69,6 +111,7 @@ const SearchInput = () => {
             type="text"
             autoFocus
             placeholder="Search"
+            tabIndex={-1}
             ref={inputRef}
             value={macro ? query.text : search}
             onInput={(e) => setSearch(e.currentTarget.value)}
@@ -91,12 +134,17 @@ const SearchInput = () => {
                 setMacro(null);
 
               if (e.key === 'Enter') {
-                const url =
-                  (macro?.url ?? Configuration.get('search.url')) +
-                  encodeURIComponent(query.text);
+                if (macro) {
+                  return macro.action({
+                    query: query.text,
+                    setSearch,
+                    setMacro,
+                  });
+                }
 
-                // eslint-disable-next-line no-restricted-globals
-                location.href = url;
+                goTo(Configuration.get('search.url'), {
+                  q: query.text,
+                });
               }
             }}
             className="caret-primary text-transparent bg-transparent transition-shadow duration-300 ease-in-out focus:drop-shadow-md outline-none p-3 w-full"
@@ -104,18 +152,72 @@ const SearchInput = () => {
         </section>
       </section>
 
+      {query.text && (
+        <section
+          ref={menuRef}
+          role="menu"
+          className="absolute w-full max-w-lg top-[9.5rem] bg-base-300 rounded-xl last:rounded-b-xl"
+        >
+          {searchMacros &&
+            searchMacros.map((v, i) => (
+              <section
+                key={v.key}
+                className={[
+                  'p-3 hover:bg-neutral-content hover:bg-opacity-10 transition-colors ease-in-out duration-200 cursor-pointer flex gap-3 items-center outline-none border-2 border-transparent focus:border-2 focus:border-primary',
+                  i % 2 !== 0 && 'bg-base-200',
+                  i === 0 && 'rounded-t-xl',
+                  i === searchMacros.length - 1 && 'rounded-b-xl',
+                ]
+                  .filter(Boolean)
+                  .join(' ')}
+                onClick={() => menuUpdate(v)}
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    menuUpdate(v);
+
+                    inputRef.current?.focus();
+                  }
+                }}
+              >
+                <span
+                  className="text-white bg-accent rounded-md p-1 pointer-events-auto inline"
+                  style={{
+                    backgroundColor: v?.style?.background,
+                    color: v?.style?.text,
+                  }}
+                >
+                  {v.icon ?? v.key}
+                </span>
+
+                <span className="font-medium">{v.name}</span>
+              </section>
+            ))}
+        </section>
+      )}
+
       <ReactModal
         isOpen={openMacroMenu}
-        overlayClassName="bg-neutral bg-opacity-50 grid place-items-center fixed inset-0"
-        className="absolute bg-base-100 rounded-xl h-min w-full max-w-md p-4 outline-none overflow-hidden border border-base-200"
+        overlayClassName={[
+          'bg-neutral-content bg-opacity-5 grid place-items-center fixed inset-0 transition-opacity duration-200 ease-in-out',
+          openMacroMenu ? 'opacity-100' : 'opacity-0',
+        ].join(' ')}
+        className={[
+          'absolute bg-base-100 rounded-xl h-min w-full max-w-md p-4 outline-none overflow-hidden border border-base-200 transition-opacity duration-200 ease-in-out',
+          openMacroMenu ? 'opacity-100' : 'opacity-0',
+        ].join(' ')}
         onRequestClose={() => setOpenMacroMenu(false)}
+        closeTimeoutMS={300}
       >
         <section className="flex justify-between items-center mb-4">
           <section className="flex gap-3 items-center">
             <section className="flex items-center justify-center">
               <span
-                className="cursor-help text-white rounded-md p-1 pointer-events-auto inline"
-                style={{ backgroundColor: macro?.style?.background }}
+                className="cursor-help bg-neutral text-white rounded-md p-1 pointer-events-auto inline"
+                style={{
+                  backgroundColor: macro?.style?.background,
+                  color: macro?.style?.text,
+                }}
                 onClick={() => setOpenMacroMenu(true)}
               >
                 {macro?.icon ?? macro?.key}
@@ -132,7 +234,7 @@ const SearchInput = () => {
           />
         </section>
 
-        <Table>
+        <Table className="w-full">
           <Table.Head>
             <span>Name</span>
             <span>Value</span>
@@ -142,13 +244,6 @@ const SearchInput = () => {
             <Table.Row>
               <span>Key</span>
               <code>{macro?.key}</code>
-            </Table.Row>
-
-            <Table.Row>
-              <span>URL</span>
-              <code className="break-all whitespace-pre-wrap">
-                {macro?.url}
-              </code>
             </Table.Row>
           </Table.Body>
         </Table>

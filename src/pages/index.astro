@@ -1,11 +1,16 @@
 ---
+import Clock from "../components/Clock";
 import SearchInput from "../components/SearchInput";
+import Wave from "../components/Wave";
 
 import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout title="Home">
-	<section class="flex flex-col justify-center items-center">
+	<Wave client:load orientation="bottom" />
+
+	<section class="relative flex flex-col justify-center items-center my-4">
+		<Clock client:visible className="mb-14" />
 		<SearchInput client:visible />
 	</section>
 </Layout>
