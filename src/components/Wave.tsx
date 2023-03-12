@@ -26,9 +26,9 @@ const Waves = ({ orientation = 'top' }: Props) => {
   return (
     <section
       className={[
-        'fixed left-0 right-0 h-10 mix-blend-screen transition-all duration-700 ease-[cubic-bezier(0.33,_1,_0.68,_1)]',
+        'fixed left-0 right-0 h-10 mix-blend-screen transition-all duration-1000 ease-[cubic-bezier(0.33,_1,_0.68,_1)] opacity-80',
         orientation === 'top' ? 'top-0 -scale-y-100' : 'bottom-0',
-        !loaded && 'opacity-0 translate-y-full',
+        !loaded && 'blur-md opacity-0 translate-y-full',
       ]
         .filter(Boolean)
         .join(' ')}
