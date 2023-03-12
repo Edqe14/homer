@@ -84,6 +84,8 @@ const SearchInput = () => {
   }, [inputRef.current]);
 
   const menuUpdate = (v: Macro) => {
+    inputRef.current?.focus();
+
     if (!macro) {
       setMacro(v);
       setSearch('');
@@ -216,8 +218,6 @@ const SearchInput = () => {
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     menuUpdate(v);
-
-                    inputRef.current?.focus();
                   }
                 }}
               >
