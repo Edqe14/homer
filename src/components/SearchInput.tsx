@@ -10,10 +10,12 @@ import Configuration, { Macro } from '../config';
 import goTo from '../lib/goTo';
 
 const SearchInput = () => {
+  const keysRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const [inputFocused, setInputFocused] = useState(true);
   const [openMacroMenu, setOpenMacroMenu] = useState(false);
   const [search, setSearch] = useState('');
   const [macro, setMacro] = useState<Macro | null>(null);
@@ -64,6 +66,23 @@ const SearchInput = () => {
     if (menuRef.current) autoAnimate(menuRef.current);
   }, [menuRef.current]);
 
+  useEffect(() => {
+    if (keysRef.current) autoAnimate(keysRef.current);
+  }, [keysRef.current]);
+
+  useEffect(() => {
+    const onFocus = () => setInputFocused(true);
+    const onBlur = () => setInputFocused(false);
+
+    inputRef.current?.addEventListener('focus', onFocus);
+    inputRef.current?.addEventListener('blur', onBlur);
+
+    return () => {
+      inputRef.current?.removeEventListener('focus', onFocus);
+      inputRef.current?.removeEventListener('blur', onBlur);
+    };
+  }, [inputRef.current]);
+
   const menuUpdate = (v: Macro) => {
     if (!macro) {
       setMacro(v);
@@ -98,6 +117,27 @@ const SearchInput = () => {
         )}
 
         <section className="relative w-full">
+          <section
+            ref={keysRef}
+            className={[
+              'absolute right-0 top-0 bottom-0 grid place-items-center pointer-events-none transition-opacity duration-150 ease-in-out',
+            ]
+              .filter(Boolean)
+              .join(' ')}
+          >
+            {!inputFocused && (
+              <span className="tracking-tighter absolute right-3 text-xs font-jetbrains opacity-75 bg-base-100 py-1 px-2 rounded-md border border-secondary whitespace-nowrap">
+                ctrl + K
+              </span>
+            )}
+
+            {inputFocused && !search && !macro && (
+              <span className="absolute right-3 text-xs font-jetbrains opacity-75 bg-base-100 py-1 px-2 rounded-md border border-secondary">
+                /
+              </span>
+            )}
+          </section>
+
           <section
             ref={contentRef}
             className="absolute text-base-content inset-0 z-10 m-3 pointer-events-none overflow-x-auto overflow-y-hidden scrollbar-none"

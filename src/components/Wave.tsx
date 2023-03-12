@@ -1,12 +1,23 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Wave from 'react-wavify';
 
 interface Props {
   orientation?: 'top' | 'bottom';
 }
 
+const COLORS = [
+  ['#8B24F2', '#8B24F2', '#F224D6'],
+  ['#F79902', '#E22522', '#6BE222'],
+  ['#F2672B', '#F22BCD', '#2B7BF2'],
+  ['#ff006e', '#3a86ff', '#80ed99'],
+] as const;
+
 const Waves = ({ orientation = 'top' }: Props) => {
   const [loaded, setLoaded] = useState(false);
+  const [colorA, colorB, colorC] = useMemo(
+    () => COLORS[Math.floor(Math.random() * COLORS.length)],
+    []
+  );
 
   useEffect(() => {
     setLoaded(true);
@@ -23,7 +34,7 @@ const Waves = ({ orientation = 'top' }: Props) => {
         .join(' ')}
     >
       <Wave
-        fill="#f79902"
+        fill={colorA}
         className={[
           'absolute w-full h-full',
           orientation === 'top' ? 'top-0' : 'bottom-0',
@@ -38,7 +49,7 @@ const Waves = ({ orientation = 'top' }: Props) => {
       />
 
       <Wave
-        fill="#e22522"
+        fill={colorB}
         className={[
           'absolute w-full h-full',
           orientation === 'top' ? 'top-0' : 'bottom-0',
@@ -53,7 +64,7 @@ const Waves = ({ orientation = 'top' }: Props) => {
       />
 
       <Wave
-        fill="#6be222"
+        fill={colorC}
         className={[
           'absolute w-full mix-blend-color-dodge h-full',
           orientation === 'top' ? 'top-0' : 'bottom-0',
