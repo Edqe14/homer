@@ -4,18 +4,22 @@ import { useHotkeys } from '@mantine/hooks';
 import ReactModal from 'react-modal';
 import { X } from '@phosphor-icons/react';
 import { Table } from 'react-daisyui';
-import autoAnimate from '@formkit/auto-animate';
+import { useAutoAnimate } from '@formkit/auto-animate/react';
 import parseSearch from '../lib/parseSearch';
 import Configuration, { Macro } from '../config';
 import goTo from '../lib/goTo';
 
 const SearchInput = () => {
-  const keysRef = useRef<HTMLDivElement>(null);
-  const menuRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const [inputFocused, setInputFocused] = useState(true);
+  const [menuFocused, setMenuFocused] = useState(false);
+
+  const [inputContainerRef] = useAutoAnimate({ duration: 150 });
+  const [menuRef] = useAutoAnimate();
+  const [keysRef] = useAutoAnimate();
+
   const [openMacroMenu, setOpenMacroMenu] = useState(false);
   const [search, setSearch] = useState('');
   const [macro, setMacro] = useState<Macro | null>(null);
@@ -29,13 +33,14 @@ const SearchInput = () => {
           })
         : [];
     }
+
     return Configuration.get('search.macros').filter(
       (m) =>
         query.text === '/' ||
         m.key === query.text ||
         m.name.toLowerCase().includes(query.text.toLowerCase())
     );
-  }, [query.text]);
+  }, [query.text, macro]);
 
   useEffect(() => {
     if (macro) return;
@@ -62,27 +67,6 @@ const SearchInput = () => {
     ],
   ]);
 
-  useEffect(() => {
-    if (menuRef.current) autoAnimate(menuRef.current);
-  }, [menuRef.current]);
-
-  useEffect(() => {
-    if (keysRef.current) autoAnimate(keysRef.current);
-  }, [keysRef.current]);
-
-  useEffect(() => {
-    const onFocus = () => setInputFocused(true);
-    const onBlur = () => setInputFocused(false);
-
-    inputRef.current?.addEventListener('focus', onFocus);
-    inputRef.current?.addEventListener('blur', onBlur);
-
-    return () => {
-      inputRef.current?.removeEventListener('focus', onFocus);
-      inputRef.current?.removeEventListener('blur', onBlur);
-    };
-  }, [inputRef.current]);
-
   const menuUpdate = (v: Macro) => {
     inputRef.current?.focus();
 
@@ -102,7 +86,10 @@ const SearchInput = () => {
 
   return (
     <>
-      <section className="w-full max-w-lg flex relative bg-base-300 rounded-xl overflow-hidden">
+      <section
+        ref={inputContainerRef}
+        className="w-full max-w-lg flex relative bg-base-300 rounded-xl overflow-hidden"
+      >
         {macro && (
           <section className="pl-3 -mr-1 flex items-center justify-center">
             <span
@@ -157,6 +144,8 @@ const SearchInput = () => {
             ref={inputRef}
             value={macro ? query.text : search}
             onInput={(e) => setSearch(e.currentTarget.value)}
+            onFocus={() => setInputFocused(true)}
+            onBlur={() => setInputFocused(false)}
             onScroll={(e) => {
               const perc =
                 e.currentTarget.scrollLeft /
@@ -195,11 +184,18 @@ const SearchInput = () => {
       </section>
 
       {/* Menu */}
-      {query.text && (
+      {(query.text || (macro && macro.autoComplete)) && (
         <section
+          onFocus={() => setMenuFocused(true)}
+          onBlur={() => setMenuFocused(false)}
           ref={menuRef}
           role="menu"
-          className="absolute w-full max-w-lg top-[9.5rem] bg-base-300 rounded-xl last:rounded-b-xl"
+          className={[
+            'absolute w-full max-w-lg top-[9.5rem] bg-base-300 rounded-xl last:rounded-b-xl transition-opacity duration-200 ease-in-out',
+            !inputFocused && !menuFocused && 'opacity-0 pointer-events-none',
+          ]
+            .filter(Boolean)
+            .join(' ')}
         >
           {searchMacros &&
             searchMacros.map((v, i) => (
