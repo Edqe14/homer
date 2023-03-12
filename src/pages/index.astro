@@ -11,7 +11,10 @@ import Layout from "../layouts/Layout.astro";
 	<Wave client:load orientation="bottom" />
 
 	<section class="relative flex flex-col justify-center items-center my-4">
-		<Clock client:visible className="mb-14" />
+		<section class="mb-14 h-10">
+			<Clock client:only />
+		</section>
+
 		<SearchInput client:visible />
 	</section>
 

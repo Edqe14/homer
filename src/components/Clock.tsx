@@ -3,6 +3,7 @@ import { Countdown } from 'react-daisyui';
 import Configuration from '../config';
 
 const Clock = ({ className }: { className?: string }) => {
+  const [loaded, setLoaded] = useState(false);
   const [hour, setHour] = useState(
     new Date().getHours() -
       (Configuration.get('clock.format') === '12' && new Date().getHours() > 12
@@ -14,6 +15,8 @@ const Clock = ({ className }: { className?: string }) => {
   const [ampm, setAmpm] = useState(new Date().getHours() >= 12 ? 'PM' : 'AM');
 
   useEffect(() => {
+    setLoaded(true);
+
     let timeout: NodeJS.Timeout | null = null;
 
     const update = () => {
@@ -46,7 +49,15 @@ const Clock = ({ className }: { className?: string }) => {
   }, []);
 
   return (
-    <section className={className}>
+    <section
+      className={[
+        'transition-opacity duration-200 ease-in-out',
+        !loaded && 'opacity-0',
+        className,
+      ]
+        .filter(Boolean)
+        .join(' ')}
+    >
       <h1 className="text-4xl font-bold font-jetbrains">
         <Countdown value={hour} />
         :
