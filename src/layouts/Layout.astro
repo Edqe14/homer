@@ -49,8 +49,8 @@ const { title, theme = "halloween" } = Astro.props;
     </style>
 	</head>
 
-	<body class="bg-base-100 text-base-content font-inter">
-    <main class="w-2/5 mx-auto min-h-screen py-16">
+	<body class="bg-base-100 overflow-hidden text-base-content font-inter">
+    <main class="px-8 lg:w-3/5 xl:w-2/5 mx-auto min-h-screen py-16 flex flex-col items-center">
       <slot />
     </main>
 	</body>

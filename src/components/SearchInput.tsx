@@ -191,7 +191,7 @@ const SearchInput = () => {
           ref={menuRef}
           role="menu"
           className={[
-            'absolute w-full max-w-lg top-[9.5rem] bg-base-300 rounded-xl last:rounded-b-xl transition-opacity duration-200 ease-in-out',
+            'z-20 absolute w-full max-w-lg top-[9.5rem] bg-base-300 rounded-xl last:rounded-b-xl transition-opacity duration-200 ease-in-out',
             !inputFocused && !menuFocused && 'opacity-0 pointer-events-none',
           ]
             .filter(Boolean)

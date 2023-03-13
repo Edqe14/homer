@@ -49,16 +49,20 @@ const Globe = ({ width, height, className }: Props) => {
   }, []);
 
   return (
-    <section className={className}>
+    <section
+      className={['grid place-items-center relative', className]
+        .filter(Boolean)
+        .join(' ')}
+    >
       <canvas
         className={[
-          'bg-transparent mx-auto transition-opacity duration-1000 ease-in-out',
+          'bg-transparent transition-opacity duration-1000 ease-in-out aspect-square',
           !loaded && 'opacity-0',
         ]
           .filter(Boolean)
           .join(' ')}
         ref={canvasRef}
-        style={{ width, height, maxWidth: '100%', aspectRatio: 1 }}
+        style={{ width, height }}
       />
     </section>
   );

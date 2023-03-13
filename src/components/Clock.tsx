@@ -58,7 +58,7 @@ const Clock = ({ className }: { className?: string }) => {
         .filter(Boolean)
         .join(' ')}
     >
-      <h1 className="text-4xl font-bold font-jetbrains">
+      <h1 className="text-4xl font-bold font-jetbrains text-center">
         <Countdown value={hour} />
         :
         <Countdown value={minute} />
