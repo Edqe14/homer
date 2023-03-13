@@ -176,7 +176,7 @@ const Configuration = new GetSet({
       {
         key: 'gh',
         name: 'Github',
-        icon: <StackOverflowLogo size={20} weight="bold" />,
+        icon: <GithubLogo size={20} weight="fill" />,
         action({ query }) {
           goTo('https://github.com/search', {
             q: query,
@@ -184,7 +184,8 @@ const Configuration = new GetSet({
           });
         },
         style: {
-          background: '#f7912c',
+          background: '#fefefe',
+          text: '#0e0e0e',
         },
       },
       {
